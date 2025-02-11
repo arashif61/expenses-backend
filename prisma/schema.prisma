@@ -1,0 +1,76 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 口座の入出金情報を貯めるテーブル
+model Account {
+  id                 BigInt              @id @default(autoincrement())
+  date               DateTime            @db.Date
+  content            String
+  debitApprovalNo    BigInt?             @map("debit_approval_no")
+  withdrawAmount     BigInt?             @map("withdraw_amount")
+  depositAmount      BigInt?             @map("deposit_amount")
+  balance            BigInt
+  csvRowNo           BigInt              @map("csv_row_no")
+  depositWithdrawals DepositWithdrawal[]
+
+  @@map("account")
+}
+
+// デビット明細情報を貯めるテーブル
+model Debit {
+  id                 BigInt              @id @default(autoincrement())
+  date               DateTime            @db.Date
+  content            String
+  debitApprovalNo    BigInt              @map("debit_approval_no")
+  amount             BigInt
+  csvRowNo           BigInt              @map("csv_row_no")
+  depositWithdrawals DepositWithdrawal[]
+
+  @@map("debit")
+}
+
+// 入出金情報を管理するテーブル
+model DepositWithdrawal {
+  id        BigInt   @id @default(autoincrement())
+  date      DateTime @db.Date
+  content   String
+  amount    BigInt
+  account   Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId BigInt?  @map("account_id")
+  debit     Debit?   @relation(fields: [debitId], references: [id], onDelete: Cascade)
+  debitId   BigInt?  @map("debit_id")
+  descNo    BigInt   @map("desc_no")
+
+  @@map("deposit_withdrawal")
+}
+
+// カテゴリー
+model Category {
+  id                          BigInt                      @id @default(autoincrement())
+  name                        String
+  color                       String
+  icon                        String
+  isInitCategory              Boolean                     @default(false)
+  depositWithdrawalCategories DepositWithdrawalCategory[]
+
+  @@map("category")
+}
+
+// 入出金とカテゴリーの対応
+model DepositWithdrawalCategory {
+  id                       BigInt   @id @default(autoincrement())
+  depositWithdrawalDate    DateTime @map("deposit_withdrawal_date") @db.Date
+  depositWithdrawalContent String   @map("deposit_withdrawal_content")
+  depositWithdrawalAmount  BigInt   @map("deposit_withdrawal_amount")
+  category                 Category @relation(fields: [categoryId], references: [id])
+  categoryId               BigInt   @map("category_id")
+
+  @@map("deposit_withdrawal_category")
+}

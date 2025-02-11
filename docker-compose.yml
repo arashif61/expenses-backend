@@ -1,0 +1,39 @@
+services:
+  app:
+    container_name: expenses-backend
+    tty: true
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    restart: always
+    volumes:
+      - ./:/app
+      - ./temp/sbicsv:/app/temp/sbicsv
+    command: >
+      ash -c "npx ts-node index.ts"
+    networks:
+      - expenses-network
+
+  pgsql_db:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${USER_NAME}
+      - POSTGRES_PASSWORD=${USER_PASS}
+      - TZ=Asia/Tokyo
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+    networks:
+      - expenses-network
+
+volumes:
+  db_vol:
+
+networks:
+  expenses-network:
+    name: expenses-backend-network
