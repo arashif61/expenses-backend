@@ -14,6 +14,7 @@ router.put('/', async function (req, res) {
     } else {
         await new DepositWithdrawalCategoryRepository().insert(body.date, body.content, body.amount, body.categoryId);
     }
+    res.status(200).json({ message: "成功" });
 });
 
 // 洗替処理

@@ -9,6 +9,7 @@ import depositWithdrawalCategoryController from './controllers/DepositWithdrawal
 import categoryController from './controllers/CategoryController';
 import accountCsvFileController from './controllers/AccountCsvFileController';
 import debitCsvFileController from './controllers/DebitCsvFileController';
+import balanceController from './controllers/BalanceController';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,6 +20,7 @@ app.use("/api/v1/depositWithdrawalCategory", depositWithdrawalCategoryController
 app.use("/api/v1/category", categoryController);
 app.use("/api/v1/accountCsvFile", accountCsvFileController);
 app.use("/api/v1/debitCsvFile", debitCsvFileController);
+app.use("/api/v1/balance", balanceController);
 
 app.listen(port, () => {
   console.log(`Expenses listening on port ${port}`)

@@ -39,6 +39,11 @@ export class CategoryRepository {
     await this.prisma.category.createMany({ data: objects });
     await this.prisma.$disconnect();
   }
+
+  async delete(id: number | bigint) {
+    await this.prisma.category.delete({ where: { id: id } });
+    await this.prisma.$disconnect();
+  }
 }
 
 export default CategoryRepository;
