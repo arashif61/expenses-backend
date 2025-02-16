@@ -74,7 +74,7 @@ router.put('/replace', async function (req, res) {
         targetList.push({ date: date, content: content, amount: amount, accountId: accountId, debitId: debitId, descNo: descNo });
     }
 
-    new DepositWithdrawalRepository().insertMany(targetList);
+    await new DepositWithdrawalRepository().insertMany(targetList);
 
     res.status(200).json({ message: "洗替成功" });
 });

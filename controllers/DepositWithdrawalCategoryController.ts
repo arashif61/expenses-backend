@@ -30,21 +30,26 @@ router.put('/replace', async function (req, res) {
     const targetDateTo = DateUtil.getFirstDate(targetDate, 1);
     const depositWithdrawalList = await new DepositWithdrawalRepository().selectByDate(targetDateFrom, targetDateTo);
 
+    const results = [];
     for (let depositWithdrawal of depositWithdrawalList) {
         const list = await new DepositWithdrawalCategoryRepository().select(depositWithdrawal.date, depositWithdrawal.content, depositWithdrawal.amount);
         // カテゴリ未登録
         if (list.length == 0) {
+            const record = {
+                depositWithdrawalDate: depositWithdrawal.date,
+                depositWithdrawalContent: depositWithdrawal.content,
+                depositWithdrawalAmnount: depositWithdrawal.amount,
+                categoryId: initCategory.id
+            };
             const similarly = await new DepositWithdrawalCategoryRepository().selectByContent(depositWithdrawal.content);
-            // 類似の入出金がある場合、同様のカテゴリで登録
             if (similarly != null) {
-                await new DepositWithdrawalCategoryRepository().insert(depositWithdrawal.date, depositWithdrawal.content, depositWithdrawal.amount, similarly.categoryId);
-            } else {
-                // 初期カテゴリで登録
-                await new DepositWithdrawalCategoryRepository().insert(depositWithdrawal.date, depositWithdrawal.content, depositWithdrawal.amount, initCategory.id);
+                // 類似の入出金がある場合、同様のカテゴリで登録
+                record["categoryId"] = similarly.categoryId
             }
+            results.push(record);
         }
     }
-
+    await new DepositWithdrawalCategoryRepository().insertMany(results);
     res.status(200).json({ message: "洗替成功" });
 });
 

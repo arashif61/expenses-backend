@@ -38,9 +38,7 @@ router.put('/:id', async function (req, res) {
 
 router.delete('/:id', async function (req, res) {
     const id = Number(req.params.id);
-
-
-
+    // TODO 削除するカテゴリに紐づく入出金のカテゴリ変更
     await new CategoryRepository().delete(id);
     res.status(200).json({ message: "成功" });
 });
