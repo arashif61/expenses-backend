@@ -37,6 +37,7 @@ router.post('/', upload.single('file'), async function (req, res) {
             const date = new Date(records[1][1]);
             const targetDateFrom = DateUtil.getFirstDate(date, 0);
             const targetDateTo = DateUtil.getFirstDate(date, 1);
+            console.log(``);
             await new DebitRepository().deleteByDate(targetDateFrom, targetDateTo);
         }
 

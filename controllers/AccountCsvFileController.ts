@@ -39,6 +39,7 @@ router.post('/', upload.single('file'), async function (req, res) {
             const targetDateFrom = DateUtil.getFirstDate(date, 0);
             const targetDateTo = DateUtil.getFirstDate(date, 1);
             await new AccountRepository().deleteByDate(targetDateFrom, targetDateTo);
+            console.log(`deleted.`);
         }
 
         for (const record of records) {
@@ -69,7 +70,6 @@ router.post('/', upload.single('file'), async function (req, res) {
             const balance = parseInt(String(record[4]).replaceAll(",", ""));
             const csvRowNo = records.indexOf(record);
             
-
             results.push({
                 date: date,
                 content: content,
@@ -81,7 +81,9 @@ router.post('/', upload.single('file'), async function (req, res) {
             });
         }
 
+        console.log(results);
         await new AccountRepository().insertMany(results);
+        console.log(`inserted.`);
 
         fs.unlinkSync(filepath);
 
