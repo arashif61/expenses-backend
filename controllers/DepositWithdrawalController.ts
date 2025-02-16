@@ -9,8 +9,8 @@ var router: Router = express.Router();
 
 router.get('/', async function (req, res) {
     const targetDate = typeof req.query.date == "string" ? new Date(req.query.date + "-01") : new Date();
-    const targetDateFrom = DateUtil.firstDateThisMonth(targetDate);
-    const targetDateTo = DateUtil.firstDateNextMonth(targetDate);
+    const targetDateFrom = DateUtil.getFirstDate(targetDate, 0);
+    const targetDateTo = DateUtil.getFirstDate(targetDate, 1);
     const depositWithdrawalList = await new DepositWithdrawalRepository().selectByDate(targetDateFrom, targetDateTo);
     const depositWithdrawalListTemp: { date: Date, content: string, amount: bigint, categoryId: bigint }[] = [];
     depositWithdrawalList.forEach((item) => {
@@ -46,8 +46,8 @@ router.get('/', async function (req, res) {
 // 洗替処理
 router.put('/replace', async function (req, res) {
     const targetDate = new Date();
-    const targetDateFrom = DateUtil.firstDatePrevMonth(targetDate);
-    const targetDateTo = DateUtil.firstDateNextMonth(targetDate);
+    const targetDateFrom = DateUtil.getFirstDate(targetDate, -1);
+    const targetDateTo = DateUtil.getFirstDate(targetDate, 1);
     const accountList = await new AccountRepository().selectByDate(targetDateFrom, targetDateTo);
     const targetList = [];
     for (const account of accountList) {

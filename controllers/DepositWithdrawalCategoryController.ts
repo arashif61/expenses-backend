@@ -26,8 +26,8 @@ router.put('/replace', async function (req, res) {
     }
 
     const targetDate = new Date();
-    const targetDateFrom = DateUtil.firstDatePrevMonth(targetDate);
-    const targetDateTo = DateUtil.firstDateNextMonth(targetDate);
+    const targetDateFrom = DateUtil.getFirstDate(targetDate, -1);
+    const targetDateTo = DateUtil.getFirstDate(targetDate, 1);
     const depositWithdrawalList = await new DepositWithdrawalRepository().selectByDate(targetDateFrom, targetDateTo);
 
     for (let depositWithdrawal of depositWithdrawalList) {

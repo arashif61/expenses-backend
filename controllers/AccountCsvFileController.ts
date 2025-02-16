@@ -5,15 +5,16 @@ import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 import iconv from 'iconv-lite';
 import DateUtil from '../util/DateUtil';
+import crypto from 'crypto';
 
 import AccountRepository from "../repository/AccountRepository";
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, '/app/temp/sbicsv/'); // アップロードされたファイルの保存先
+    destination: (req, file, callback) => {
+        callback(null, '/app/temp/sbicsv/'); // アップロードされたファイルの保存先
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // ファイル名をユニークにする
+    filename: (req, file, callback) => {
+        callback(null, Date.now() + crypto.randomUUID() + path.extname(file.originalname)); // ファイル名をユニークにする
     }
 });
 const upload = multer({ storage: storage });
@@ -32,24 +33,21 @@ router.post('/', upload.single('file'), async function (req, res) {
         const results = [];
         const records = parse(utf8Data, { quote: '"' });
         let isFirstRow = true;
-        let isSecondRow = false;
+
+        if (records.length > 1) {
+            const date = new Date(records[1][1]);
+            const targetDateFrom = DateUtil.getFirstDate(date, 0);
+            const targetDateTo = DateUtil.getFirstDate(date, 1);
+            new AccountRepository().deleteByDate(targetDateFrom, targetDateTo);
+        }
 
         for (const record of records) {
             if (isFirstRow) {
                 isFirstRow = false;
-                isSecondRow = true;
                 continue;
             }
             
             const date = new Date(record[0]);
-
-            if (isSecondRow) {
-                const targetDateFrom = DateUtil.firstDateThisMonth(date);
-                const targetDateTo = DateUtil.firstDateNextMonth(date);
-                new AccountRepository().deleteByDate(targetDateFrom, targetDateTo);
-                isSecondRow = false;
-            }
-
             const content = String(record[1]);
             
             let debitApprovalNo = null;
