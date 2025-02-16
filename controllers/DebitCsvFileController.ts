@@ -1,11 +1,12 @@
-import express, { Router } from 'express'
+import express, { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 import iconv from 'iconv-lite';
-import DateUtil from '../util/DateUtil';
+import log4js from 'log4js';
 
+import DateUtil from '../util/DateUtil';
 import DebitRepository from "../repository/DebitRepository";
 
 const storage = multer.diskStorage({
@@ -19,6 +20,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 var router: Router = express.Router();
+// log4jsの設定
+log4js.configure('log4js_setting.json');
+const logger = log4js.getLogger("server");
 
 router.post('/', upload.single('file'), async function (req, res) {
     try {
@@ -37,7 +41,7 @@ router.post('/', upload.single('file'), async function (req, res) {
             const date = new Date(records[1][1]);
             const targetDateFrom = DateUtil.getFirstDate(date, 0);
             const targetDateTo = DateUtil.getFirstDate(date, 1);
-            console.log(``);
+            logger.debug(`deleted.`);
             await new DebitRepository().deleteByDate(targetDateFrom, targetDateTo);
         }
 
@@ -61,8 +65,9 @@ router.post('/', upload.single('file'), async function (req, res) {
                 csvRowNo: csvRowNo
             });
         }
-
+        logger.debug(results);
         await new DebitRepository().insertMany(results);
+        logger.debug(`inserted.`)
 
         fs.unlinkSync(filepath);
 

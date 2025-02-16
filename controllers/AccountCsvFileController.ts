@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import express, { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
@@ -6,6 +6,7 @@ import fs from 'fs';
 import iconv from 'iconv-lite';
 import DateUtil from '../util/DateUtil';
 import crypto from 'crypto';
+import log4js from 'log4js';
 
 import AccountRepository from "../repository/AccountRepository";
 
@@ -18,6 +19,9 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
+// log4jsの設定
+log4js.configure('log4js_setting.json');
+const logger = log4js.getLogger("server");
 
 var router: Router = express.Router();
 
@@ -39,7 +43,7 @@ router.post('/', upload.single('file'), async function (req, res) {
             const targetDateFrom = DateUtil.getFirstDate(date, 0);
             const targetDateTo = DateUtil.getFirstDate(date, 1);
             await new AccountRepository().deleteByDate(targetDateFrom, targetDateTo);
-            console.log(`deleted.`);
+            logger.debug(`deleted.`);
         }
 
         for (const record of records) {
@@ -81,9 +85,9 @@ router.post('/', upload.single('file'), async function (req, res) {
             });
         }
 
-        console.log(results);
+        logger.debug(results);
         await new AccountRepository().insertMany(results);
-        console.log(`inserted.`);
+        logger.debug(`inserted.`);
 
         fs.unlinkSync(filepath);
 

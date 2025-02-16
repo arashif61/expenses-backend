@@ -1,8 +1,13 @@
-import express, { Router } from 'express'
+import express, { Router } from 'express';
+import log4js from 'log4js';
+
 import CategoryRepository from "../repository/CategoryRepository";
 import DepositWithdrawalCategoryRepository from "../repository/DepositWithdrawalCategoryRepository";
 
 var router: Router = express.Router();
+// log4jsの設定
+log4js.configure('log4js_setting.json');
+const logger = log4js.getLogger("server");
 
 router.get('/', async function (req, res) {
     const list = await new CategoryRepository().selectAll();

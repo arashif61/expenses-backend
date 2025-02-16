@@ -1,7 +1,12 @@
-import express, { Router } from 'express'
+import express, { Router } from 'express';
+import log4js from 'log4js';
+
 import AccountRepository from "../repository/AccountRepository";
 
 var router: Router = express.Router();
+// log4jsの設定
+log4js.configure('log4js_setting.json');
+const logger = log4js.getLogger("server");
 
 router.get('/', async function (req, res) {
   const account = await new AccountRepository().selectLatestAccount();

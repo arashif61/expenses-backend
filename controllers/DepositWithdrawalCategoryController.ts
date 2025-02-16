@@ -1,10 +1,15 @@
-import express, { Router } from 'express'
+import express, { Router } from 'express';
+import log4js from 'log4js';
+
 import DepositWithdrawalCategoryRepository from "../repository/DepositWithdrawalCategoryRepository";
 import DepositWithdrawalRepository from "../repository/DepositWithdrawalRepository";
 import CategoryRepository from '../repository/CategoryRepository';
 import DateUtil from '../util/DateUtil';
 
 var router: Router = express.Router();
+// log4jsの設定
+log4js.configure('log4js_setting.json');
+const logger = log4js.getLogger("server");
 
 router.put('/', async function (req, res) {
     const body = req.body;
