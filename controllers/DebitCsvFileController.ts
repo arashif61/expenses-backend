@@ -21,7 +21,7 @@ const upload = multer({ storage: storage });
 
 var router: Router = express.Router();
 // log4jsの設定
-log4js.configure('../log4js_setting.json');
+log4js.configure('./../log4js_settings.json');
 const logger = log4js.getLogger("server");
 
 router.post('/', upload.single('file'), async function (req, res) {

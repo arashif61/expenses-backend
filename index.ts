@@ -14,7 +14,7 @@ const app: express.Express = express();
 const port = 3000;
 
 // log4jsの設定
-log4js.configure('log4js_setting.json');
+log4js.configure('./log4js_settings.json');
 const logger = log4js.getLogger("server");
 
 app.use(express.json());

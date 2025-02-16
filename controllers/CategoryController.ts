@@ -6,7 +6,7 @@ import DepositWithdrawalCategoryRepository from "../repository/DepositWithdrawal
 
 var router: Router = express.Router();
 // log4jsの設定
-log4js.configure('../log4js_setting.json');
+log4js.configure('./../log4js_settings.json');
 const logger = log4js.getLogger("server");
 
 router.get('/', async function (req, res) {
