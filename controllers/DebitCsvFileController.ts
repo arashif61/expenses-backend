@@ -38,7 +38,7 @@ router.post('/', upload.single('file'), async function (req, res) {
         let isFirstRow = true;
 
         if (records.length > 1) {
-            const date = new Date(records[1][1]);
+            const date = new Date(records[1][0]);
             const targetDateFrom = DateUtil.getFirstDate(date, 0);
             const targetDateTo = DateUtil.getFirstDate(date, 1);
             logger.debug(`deleted.`);

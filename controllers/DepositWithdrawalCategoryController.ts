@@ -43,7 +43,7 @@ router.put('/replace', async function (req, res) {
             const record = {
                 depositWithdrawalDate: depositWithdrawal.date,
                 depositWithdrawalContent: depositWithdrawal.content,
-                depositWithdrawalAmnount: depositWithdrawal.amount,
+                depositWithdrawalAmount: depositWithdrawal.amount,
                 categoryId: initCategory.id
             };
             const similarly = await new DepositWithdrawalCategoryRepository().selectByContent(depositWithdrawal.content);
